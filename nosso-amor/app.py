@@ -4,22 +4,16 @@ from pathlib import Path
 
 st.set_page_config(page_title="Alexandre ❤ Yasmin", page_icon="❤", layout="wide")
 
-st.markdown('''
+st.markdown("""
 <style>
 #MainMenu{visibility:hidden;}
 footer{visibility:hidden;}
 header{visibility:hidden;}
-.block-container{
-    padding-top: 0rem !important;
-    padding-bottom: 0rem !important;
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
-    max-width: 100% !important;
-}
-[data-testid="stVerticalBlock"]{gap:0rem;}
+.block-container{padding:0 !important; max-width:100% !important;}
+[data-testid="stVerticalBlock"]{gap:0;}
 iframe{border:none;}
 </style>
-''', unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 def get_images():
     base_dir = Path(__file__).parent
@@ -37,11 +31,11 @@ def get_images():
     b64_list = []
     if folder and folder.exists():
         files = sorted(folder.rglob("*"))
-        for f in files:
-            if f.is_file() and f.suffix.lower() in [".jpg",".jpeg",".png",".webp"]:
+        for ff in files:
+            if ff.is_file() and ff.suffix.lower() in [".jpg",".jpeg",".png",".webp"]:
                 try:
-                    data = base64.b64encode(f.read_bytes()).decode()
-                    mime = "jpeg" if f.suffix.lower() in [".jpg",".jpeg"] else f.suffix.lower().replace(".","")
+                    data = base64.b64encode(ff.read_bytes()).decode()
+                    mime = "jpeg" if ff.suffix.lower() in [".jpg",".jpeg"] else ff.suffix.lower().replace(".","")
                     b64_list.append(f"data:image/{mime};base64,{data}")
                 except:
                     pass
@@ -71,89 +65,140 @@ html_template = f"""
   :root {{ --bg1:#ffe6f2; --bg2:#ffc2d1; --bg3:#ffb3c6; --card: rgba(255,255,255,0.88); --text:#4a1942; --sub:#a65a7a; --accent:#d63384; }}
   body.dark {{ --bg1:#1a0a14; --bg2:#2d1328; --bg3:#4a1942; --card: rgba(40,18,36,0.92); --text:#ffd6e8; --sub:#ffb3d1; --accent:#ff6b9d; }}
   *{{margin:0;padding:0;box-sizing:border-box;}}
-  html, body {{height:100%; overflow:hidden;}}
-  body{{font-family:'Poppins',sans-serif;text-align:center;background:transparent;color:var(--text); display:flex; align-items:center; justify-content:center; min-height:100vh; padding:8px;}}
+  html,body{{min-height:100%;}}
+  body{{font-family:'Poppins',sans-serif;background:transparent;color:var(--text);display:flex;justify-content:center;padding:14px;}}
   .page-bg{{position:fixed;inset:0;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));z-index:-1;}}
-  .topbar{{display:flex;justify-content:space-between;align-items:center;max-width:520px;margin:0 auto 10px;width:100%;}}
-  .icon-btn{{background:var(--card);border:1.5px solid rgba(255,255,255,0.3);border-radius:50px;padding:7px 12px;font-size:11px;cursor:pointer;color:var(--text);}}
-  .card{{background:var(--card);backdrop-filter:blur(16px);border-radius:28px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.2);border:1.5px solid rgba(255,255,255,0.25);max-width:520px; width:100%; max-height:96vh; overflow-y:auto; scrollbar-width:none;}}
-  .card::-webkit-scrollbar{{display:none;}}
-  .names{{font-family:'Dancing Script',cursive;font-size:42px;color:var(--accent);line-height:1;}}
-  .heart-beat{{font-size:44px;animation:beat 1.2s infinite;margin:6px 0;display:inline-block;}}
-  @keyframes beat{{0%{{transform:scale(1);}}50%{{transform:scale(1.2);}}100%{{transform:scale(1);}}}}
-  .subtitle{{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--sub);margin-bottom:6px;}}
-  .carousel{{position:relative;width:100%;aspect-ratio:4/3.1;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.2);margin:12px 0;}}
-  .carousel-item{{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;transform:scale(0.98);}}
-  .carousel-item.active{{opacity:1;transform:scale(1);z-index:2;}}
+  .topbar{{display:flex;justify-content:space-between;max-width:1100px;width:100%;margin:0 auto 12px;}}
+  .icon-btn{{background:var(--card);border:1.5px solid rgba(255,255,255,0.3);border-radius:50px;padding:7px 14px;font-size:11px;cursor:pointer;color:var(--text);box-shadow:0 4px 12px rgba(0,0,0,0.1);}}
+
+  .wrapper{{width:100%;max-width:1100px;}}
+  .main-grid{{display:grid;grid-template-columns:1.15fr 0.85fr;gap:18px;align-items:start;}}
+  
+  .card{{background:var(--card);backdrop-filter:blur(16px);border-radius:26px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.18);border:1.5px solid rgba(255,255,255,0.25);}}
+  .left-card .header-row{{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}}
+  .names-wrap{{text-align:left;}}
+  .names{{font-family:'Dancing Script',cursive;font-size:40px;color:var(--accent);line-height:1;}}
+  .names.small{{font-size:36px;}}
+  .heart-beat{{font-size:32px;animation:beat 1.2s infinite;margin:0 8px;display:inline-block;}}
+  @keyframes beat{{0%{{transform:scale(1);}}50%{{transform:scale(1.25);}}100%{{transform:scale(1);}}}}
+  .subtitle{{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sub);}}
+  .date-line{{font-size:12px;color:var(--sub);margin-top:4px;}}
+
+  .carousel{{position:relative;width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.18);margin-top:14px;}}
+  .carousel-item{{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;}}
+  .carousel-item.active{{opacity:1;z-index:2;}}
   .carousel-item img{{width:100%;height:100%;object-fit:cover;}}
-  .badge{{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.55);color:white;padding:4px 10px;border-radius:20px;font-size:10px;}}
-  .carousel-nav{{position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);z-index:3;padding:0 6px;}}
-  .nav-btn{{background:rgba(255,255,255,0.85);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:grid;place-items:center;}}
-  .dots{{display:flex;gap:5px;justify-content:center;margin-top:8px;}}
+  .badge{{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.55);color:white;padding:5px 10px;border-radius:20px;font-size:10px;}}
+  .carousel-nav{{position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);z-index:3;padding:0 8px;}}
+  .nav-btn{{background:rgba(255,255,255,0.9);border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:18px;display:grid;place-items:center;}}
+  .dots{{display:flex;gap:6px;justify-content:center;margin-top:10px;}}
   .dot{{width:7px;height:7px;border-radius:50%;background:rgba(214,51,132,0.25);cursor:pointer;}}
-  .dot.active{{background:var(--accent);width:20px;}}
-  .contador-box{{background:linear-gradient(135deg,#d63384,#ff6b9d);color:white;border-radius:16px;padding:14px;margin-top:12px;}}
-  .contador-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}}
-  .unit{{background:rgba(255,255,255,0.18);border-radius:10px;padding:7px 2px;}}
-  .unit b{{display:block;font-size:18px;}}
-  .unit span{{font-size:10px;text-transform:uppercase;}}
-  .seconds{{margin-top:8px;font-size:11px;}}
-  .music-card{{background:var(--card);border-radius:14px;padding:10px;margin-top:12px;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid rgba(255,255,255,0.3);}}
-  .music-cover{{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#d63384,#ff6b9d);display:grid;place-items:center;font-size:24px;}}
-  .music-info b{{display:block;font-size:12px;}}
-  .music-info span{{font-size:10px;color:var(--sub);}}
-  .play-btn{{width:38px;height:38px;border-radius:50%;background:var(--accent);color:white;border:none;font-size:16px;cursor:pointer;display:grid;place-items:center;}}
-  .message{{margin-top:12px;font-size:13px;line-height:1.5;font-style:italic;}}
+  .dot.active{{background:var(--accent);width:22px;}}
+
+  .right-stack{{display:flex;flex-direction:column;gap:18px;}}
+  .contador-box{{background:linear-gradient(135deg,#d63384,#ff6b9d);color:white;border-radius:20px;padding:20px;text-align:center;}}
+  .contador-box h3{{font-size:13px;letter-spacing:2px;font-weight:600;opacity:0.95;}}
+  .contador-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}}
+  .unit{{background:rgba(255,255,255,0.18);border-radius:12px;padding:12px 4px;}}
+  .unit b{{display:block;font-size:22px;}}
+  .unit span{{font-size:10px;text-transform:uppercase;letter-spacing:1px;}}
+  .seconds{{margin-top:12px;font-size:12px;opacity:0.9;}}
+
+  .music-card{{background:var(--card);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px;border:1px solid rgba(255,255,255,0.3);}}
+  .music-cover{{width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#d63384,#ff6b9d);display:grid;place-items:center;font-size:28px;flex-shrink:0;}}
+  .music-info b{{font-size:13px;display:block;}}
+  .music-info span{{font-size:11px;color:var(--sub);}}
+  .play-btn{{width:42px;height:42px;border-radius:50%;background:var(--accent);color:white;border:none;font-size:18px;cursor:pointer;margin-left:auto;}}
+
+  .bottom-message{{margin-top:18px;text-align:center;background:var(--card);border-radius:20px;padding:22px 24px;box-shadow:0 10px 30px rgba(0,0,0,0.12);border:1.5px solid rgba(255,255,255,0.25);}}
+  .bottom-message p{{font-family:'Dancing Script',cursive;font-size:28px;color:var(--accent);line-height:1.3;}}
+  .bottom-message span{{display:block;margin-top:6px;font-family:'Poppins',sans-serif;font-size:13px;color:var(--sub);letter-spacing:1px;}}
+
   .hearts{{position:fixed;inset:0;pointer-events:none;overflow:hidden;}}
-  .hearts span{{position:absolute;animation:fall linear infinite;font-size:16px;}}
+  .hearts span{{position:absolute;animation:fall linear infinite;}}
   @keyframes fall{{from{{transform:translateY(-10vh) rotate(0deg);opacity:1;}}to{{transform:translateY(110vh) rotate(360deg);opacity:0;}}}}
+
+  @media (max-width: 900px){{
+    .main-grid{{grid-template-columns:1fr;}}
+    .topbar{{max-width:520px;}}
+    .card{{max-width:520px;margin:0 auto;}}
+    .bottom-message{{max-width:520px;margin:18px auto 0;}}
+    .bottom-message p{{font-size:24px;}}
+  }}
 </style>
 </head>
 <body>
 <div class="page-bg"></div>
 <div class="hearts" id="hearts"></div>
-<div style="width:100%; max-width:520px;">
-<div class="topbar">
-  <button class="icon-btn" onclick="toggleDark()">🌙 / ☀️</button>
-  <button class="icon-btn" onclick="toggleMusic()">🎵 Música</button>
-</div>
-<div class="card">
-  <div class="subtitle">Nosso Amor</div>
-  <div class="names">Alexandre</div>
-  <div class="heart-beat">❤</div>
-  <div class="names">Yasmin</div>
-  <p style="margin-top:4px;color:var(--sub);font-size:12px;">Desde 19 de Setembro de 2026 • 16:30</p>
-  <div class="carousel" id="carousel">
-    {carousel_items}
-    <div class="carousel-nav">
-      <button class="nav-btn" onclick="prev()">‹</button>
-      <button class="nav-btn" onclick="next()">›</button>
+
+<div class="wrapper">
+  <div class="topbar">
+    <button class="icon-btn" onclick="toggleDark()">🌙 / ☀️ Modo</button>
+    <button class="icon-btn" onclick="toggleMusic()">🎵 Tocar música</button>
+  </div>
+
+  <div class="main-grid">
+    <!-- ESQUERDA -->
+    <div class="card left-card">
+      <div class="header-row">
+        <div class="names-wrap">
+          <div class="subtitle">Nosso Amor</div>
+          <div style="display:flex;align-items:center;margin-top:4px;">
+            <div class="names">Alexandre</div>
+            <div class="heart-beat">❤</div>
+            <div class="names small">Yasmin</div>
+          </div>
+          <div class="date-line">Desde 19 de Setembro de 2026 • 16:30</div>
+        </div>
+      </div>
+
+      <div class="carousel" id="carousel">
+        {carousel_items}
+        <div class="carousel-nav">
+          <button class="nav-btn" onclick="prev()">‹</button>
+          <button class="nav-btn" onclick="next()">›</button>
+        </div>
+      </div>
+      <div class="dots">{dots}</div>
+    </div>
+
+    <!-- DIREITA -->
+    <div class="right-stack">
+      <div class="contador-box">
+        <h3>ESTAMOS JUNTOS HÁ</h3>
+        <div class="contador-grid">
+          <div class="unit"><b id="anos">0</b><span>Anos</span></div>
+          <div class="unit"><b id="meses">0</b><span>Meses</span></div>
+          <div class="unit"><b id="dias">0</b><span>Dias</span></div>
+          <div class="unit"><b id="horas">0</b><span>Horas</span></div>
+          <div class="unit"><b id="mins">0</b><span>Min</span></div>
+          <div class="unit"><b id="totalDias">0</b><span>Total dias</span></div>
+        </div>
+        <div class="seconds" id="fullText"></div>
+      </div>
+
+      <div class="card" style="padding:16px;">
+        <div class="music-card" style="margin:0;border:none;padding:0;background:transparent;box-shadow:none;">
+          <div class="music-cover">🎶</div>
+          <div class="music-info">
+            <b>Foi Assim - Sotam, Rob</b>
+            <span>E foi assim quando te vi a primeira vez...</span>
+          </div>
+          <button class="play-btn" id="playBtn" onclick="toggleMusic()">▶</button>
+        </div>
+        <div id="ytWrap" style="display:none; margin-top:12px; border-radius:12px; overflow:hidden;">
+          <iframe id="ytplayer" width="100%" height="180" src="https://www.youtube.com/embed/4ukPJTILszE?enablejsapi=1&loop=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="dots">{dots}</div>
-  <div class="contador-box">
-    <div style="font-weight:600;font-size:13px;">ESTAMOS JUNTOS HÁ</div>
-    <div class="contador-grid">
-      <div class="unit"><b id="anos">0</b><span>Anos</span></div>
-      <div class="unit"><b id="meses">0</b><span>Meses</span></div>
-      <div class="unit"><b id="dias">0</b><span>Dias</span></div>
-      <div class="unit"><b id="horas">0</b><span>Horas</span></div>
-      <div class="unit"><b id="mins">0</b><span>Min</span></div>
-      <div class="unit"><b id="totalDias">0</b><span>Total dias</span></div>
-    </div>
-    <div class="seconds" id="fullText"></div>
+
+  <div class="bottom-message">
+    <p>"Cada segundo ao seu lado é o meu capítulo favorito. Obrigado por me fazer o homem mais feliz do mundo. Te amo hoje e sempre."</p>
+    <span>para minha nega ❤</span>
   </div>
-  <div class="music-card">
-    <div class="music-cover">🎶</div>
-    <div class="music-info"><b>Foi Assim - Sotam, Rob</b><span>E foi assim quando te vi...</span></div>
-    <button class="play-btn" id="playBtn" onclick="toggleMusic()">▶</button>
-  </div>
-  <div id="ytWrap" style="display:none; margin-top:10px; border-radius:12px; overflow:hidden;">
-    <iframe id="ytplayer" width="100%" height="160" src="https://www.youtube.com/embed/4ukPJTILszE?enablejsapi=1&loop=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-  </div>
-  <p class="message">"Cada segundo ao seu lado é o meu momento favorito."</p>
 </div>
-</div>
+
 <script>
 const inicio = new Date("2026-09-19T16:30:00-03:00");
 function atualizar(){{
@@ -177,6 +222,7 @@ function atualizar(){{
   document.getElementById("fullText").innerText = anos+" anos, "+meses+" meses, "+dias+" dias, "+h+"h "+m+"m "+s+"s de nós dois ❤";
 }}
 setInterval(atualizar,1000); atualizar();
+
 let cur=0;
 const items=document.querySelectorAll('.carousel-item');
 const dotsEls=document.querySelectorAll('.dot');
@@ -189,8 +235,9 @@ function show(i){{
 }}
 function next(){{show(cur+1);}}function prev(){{show(cur-1);}}function goTo(i){{show(i);}}
 setInterval(next,4000);
+
 const container = document.getElementById("hearts");
-for(let i=0;i<16;i++){{
+for(let i=0;i<18;i++){{
   const span=document.createElement("span");
   span.innerText=["❤","💖","💕","💗"][Math.floor(Math.random()*4)];
   span.style.left=Math.random()*100+"vw";
@@ -214,4 +261,4 @@ function toggleMusic(){{
 </html>
 """
 
-st.components.v1.html(html_template, height=950, scrolling=False)
+st.components.v1.html(html_template, height=850, scrolling=False)
