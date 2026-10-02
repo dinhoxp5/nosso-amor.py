@@ -11,23 +11,19 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def get_images():
-    folder = Path("imagens")
+    # pega a pasta onde o app.py está, não a raiz do GitHub
+    base_dir = Path(__file__).parent
+    folder = base_dir / "imagens"
     b64_list = []
-    # se não achar na raiz, procura em subpastas
-    if not folder.exists():
-        # tenta achar em qualquer lugar tipo nosso-amor/imagens
-        for p in Path(".").rglob("imagens"):
-            if p.is_dir():
-                folder = p
-                break
-    
     if folder.exists():
-        files = sorted(folder.rglob("*")) # rglob pega até de subpasta
+        files = sorted(folder.glob("*"))
         for f in files:
             if f.suffix.lower() in [".jpg",".jpeg",".png",".webp"]:
                 try:
                     data = base64.b64encode(f.read_bytes()).decode()
-                    b64_list.append(f"data:image/jpeg;base64,{data}")
+                    # pega o tipo certo
+                    mime = "jpeg" if f.suffix.lower() in [".jpg",".jpeg"] else f.suffix.lower().replace(".","")
+                    b64_list.append(f"data:image/{mime};base64,{data}")
                 except:
                     pass
     return b64_list
