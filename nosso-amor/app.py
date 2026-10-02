@@ -13,16 +13,21 @@ st.markdown("""
 def get_images():
     folder = Path("imagens")
     b64_list = []
-    names = []
+    # se não achar na raiz, procura em subpastas
+    if not folder.exists():
+        # tenta achar em qualquer lugar tipo nosso-amor/imagens
+        for p in Path(".").rglob("imagens"):
+            if p.is_dir():
+                folder = p
+                break
+    
     if folder.exists():
-        # pega todos jpeg/jpg/png
-        files = sorted(folder.glob("*"))
+        files = sorted(folder.rglob("*")) # rglob pega até de subpasta
         for f in files:
             if f.suffix.lower() in [".jpg",".jpeg",".png",".webp"]:
                 try:
                     data = base64.b64encode(f.read_bytes()).decode()
                     b64_list.append(f"data:image/jpeg;base64,{data}")
-                    names.append(f.stem)
                 except:
                     pass
     return b64_list
